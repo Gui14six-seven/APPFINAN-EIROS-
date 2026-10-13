@@ -4,18 +4,20 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { formatCurrency } from "@/lib/utils";
 
 /**
- * Paleta categórica validada (OKLab/CVD) para as duas superfícies do app.
- * A ordem dos slots é o mecanismo de segurança para daltonismo — não embaralhe
- * nem gere cores extras: a 8ª categoria em diante cai em "Outros".
+ * Paleta categórica validada (OKLab/CVD) nas duas superfícies: os valores de
+ * cada tema vivem em globals.css, então o gráfico acompanha o tema sem
+ * re-renderizar. A ordem dos slots é o mecanismo de segurança para daltonismo:
+ * não embaralhe nem gere cores extras, e a 8ª categoria em diante cai em
+ * "Outros".
  */
-const PALETTE_LIGHT = [
-  "#2a78d6",
-  "#eb6834",
-  "#1baf7a",
-  "#eda100",
-  "#e87ba4",
-  "#008300",
-  "#6250d6",
+const PALETTE = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+  "var(--chart-6)",
+  "var(--chart-7)",
 ];
 
 export type CategorySlice = { category: string; total: number };
@@ -49,7 +51,7 @@ export function CategoryChart({ data }: { data: CategorySlice[] }) {
               {data.map((slice, index) => (
                 <Cell
                   key={slice.category}
-                  fill={PALETTE_LIGHT[index % PALETTE_LIGHT.length]}
+                  fill={PALETTE[index % PALETTE.length]}
                 />
               ))}
             </Pie>
@@ -77,9 +79,7 @@ export function CategoryChart({ data }: { data: CategorySlice[] }) {
             <span
               aria-hidden
               className="h-2.5 w-2.5 shrink-0 rounded-full"
-              style={{
-                background: PALETTE_LIGHT[index % PALETTE_LIGHT.length],
-              }}
+              style={{ background: PALETTE[index % PALETTE.length] }}
             />
             <span className="flex-1 truncate text-foreground">
               {slice.category}
