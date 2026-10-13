@@ -73,15 +73,61 @@ supabase/schema.sql   tabela + RLS
 
 ## Deploy na Vercel
 
-1. Suba o repositório para o GitHub.
-2. Importe na Vercel, defina `NEXT_PUBLIC_SUPABASE_URL` e
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY` nas variáveis de ambiente do projeto.
-3. Em _Supabase → Authentication → URL Configuration_, adicione o domínio da
-   Vercel como Site URL / Redirect URL.
+1. **Importe o repositório** em vercel.com/new. A Vercel detecta Next.js
+   sozinha: não mexa em build command, output ou install command.
+
+2. **Defina as duas variáveis de ambiente** (Settings → Environment Variables),
+   marcando os três ambientes (Production, Preview, Development):
+
+   | Nome | Onde achar no Supabase |
+   | --- | --- |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Project Settings → API → Project URL |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API → chave `anon` / `publishable` |
+
+   Sem elas o build passa, mas toda página falha em tempo de execução.
+
+3. **Rode `supabase/schema.sql`** no SQL Editor do Supabase, se ainda não rodou.
+
+4. **Libere o domínio da Vercel no Supabase** (Authentication → URL
+   Configuration): ponha a URL de produção em _Site URL_ e acrescente
+   `https://seu-app.vercel.app/**` em _Redirect URLs_. Sem isso o login em
+   produção não conclui.
+
+5. **Deploy.** Cada push na `main` publica automaticamente.
+
+## Segurança das chaves
+
+As duas variáveis acima têm o prefixo `NEXT_PUBLIC_` justamente porque
+**precisam** chegar ao navegador: é de lá que o usuário autentica e consulta os
+próprios dados. Isso é o desenho do Supabase, não um descuido. A chave `anon`
+(ou `publishable`) não dá acesso a nada por si só: quem decide o que cada
+requisição enxerga é o Row Level Security, e as policies em
+`supabase/schema.sql` restringem toda leitura e escrita a `auth.uid() =
+user_id`.
+
+O que **nunca** pode ir ao front-end nem ao repositório:
+
+- a chave `service_role` (ou `secret`), que ignora RLS por completo;
+- a senha do banco e a connection string do Postgres;
+- qualquer token de acesso pessoal do Supabase.
+
+Nada disso é usado neste projeto, e o app não tem nenhuma variável de servidor:
+não há `.env` versionado, e `.gitignore` cobre `.env` e `.env*.local`. Se algum
+dia precisar de um segredo de servidor, declare-o **sem** o prefixo
+`NEXT_PUBLIC_` e use-o apenas em Server Actions ou Route Handlers.
+
+Duas conferências que valem antes de publicar:
+
+- RLS **ativo** na tabela `transactions` (Supabase → Table Editor → o cadeado
+  deve estar fechado). Sem RLS, a chave pública expõe a tabela inteira.
+- Confirmação de e-mail ligada em produção (Authentication → Providers →
+  Email), para não aceitar cadastro em endereço alheio.
 
 ## Validação feita
 
 `npm run build` compila sem erros de tipo ou lint. A lógica de dados fica em
 `src/lib/transactions.ts` e a validação de formulário em
 `src/app/dashboard/actions.ts` (valor positivo, data no formato correto,
-categoria coerente com o tipo) — além do RLS e dos `CHECK` no banco.
+categoria coerente com o tipo), além do RLS e dos `CHECK` no banco. As Server
+Actions revalidam a sessão a cada chamada e filtram todo update e delete por
+`user_id`, de modo que um id adivinhado não alcança o dado de outra pessoa.
