@@ -82,7 +82,7 @@ export function TransactionDialog({
             {isEdit ? "Editar transação" : "Nova transação"}
           </DialogTitle>
           <DialogDescription>
-            Informe os dados do lançamento. Valores sempre positivos — o tipo
+            Informe os dados do lançamento. Valores sempre positivos: o tipo
             define se entra ou sai.
           </DialogDescription>
         </DialogHeader>

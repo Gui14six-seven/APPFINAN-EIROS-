@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { createClient } from "@/lib/supabase/server";
 
 const FEATURES = [
@@ -49,6 +50,7 @@ export default async function LandingPage() {
             Finanças Pessoais
           </span>
           <nav className="flex items-center gap-2">
+            <ThemeToggle />
             {user ? (
               <Button asChild size="sm">
                 <Link href="/dashboard">Ir ao dashboard</Link>
@@ -77,7 +79,7 @@ export default async function LandingPage() {
           </h1>
           <p className="max-w-xl text-lg text-muted-foreground">
             Registre receitas e despesas, categorize em segundos e acompanhe o
-            saldo do mês em um painel claro — tudo em um só lugar.
+            saldo do mês em um painel claro, tudo em um só lugar.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
@@ -111,7 +113,7 @@ export default async function LandingPage() {
 
       <footer className="border-t py-8">
         <p className="container text-center text-sm text-muted-foreground">
-          Finanças Pessoais — seus dados são privados, protegidos por Row Level
+          Finanças Pessoais. Seus dados são privados, protegidos por Row Level
           Security.
         </p>
       </footer>

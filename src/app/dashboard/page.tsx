@@ -22,7 +22,7 @@ import {
 } from "@/lib/transactions";
 import { cn, formatCurrency, MONTHS } from "@/lib/utils";
 
-export const metadata = { title: "Dashboard — Finanças Pessoais" };
+export const metadata = { title: "Dashboard | Finanças Pessoais" };
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
